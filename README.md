@@ -2,7 +2,7 @@
 
 *Sometimes schema migrations are just not enough.*
 
-Data migration framework written in plain Ruby. It is pretty generic, since it does not depend on any web framework.
+Data migration framework written in plain Ruby. Although originally created for migrating data in MongoDb, currently it is pretty **generic**, since it **does not depend** on any web framework.
 
 ## Features of Framework
 
@@ -18,7 +18,7 @@ Assuming that the migration strategy is implemented with a class `MigrationStrat
 
 ``` ruby
 migration_strategy  = MigrationStrategy.new
-migration_framework = Migrations::Framework.new(migration_strategy)
+migration_framework = KitCat::Framework.new(migration_strategy)
 migration_framework.execute
 ```
 
