@@ -2,14 +2,14 @@ require 'ruby-progressbar'
 require 'active_model'
 require 'active_support/core_ext'
 
-module Migrations
+module KitCat
   class Framework
     attr_reader :last_item_processed,
                 :migration_name,
                 :number_of_items_processed
 
     # @params migration_strategy {Object}
-    #           Instance implementing the methods of +Migrations::Callbacks+
+    #           Instance implementing the methods of +KitCat::Callbacks+
     #
     #         migration_name {String} Optional.
     #           The name of the migration. Used as tag in log file name. If not given, a random/unique one is used.

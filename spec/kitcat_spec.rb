@@ -1,11 +1,11 @@
 require "spec_helper"
 
-describe Migrations::Framework do
+describe KitCat::Framework do
 
   # --------------------------------------------
   # hosting class example
   #
-  module Migrations
+  module KitCat
     module Test
       class Strategy
         # Helping class that will use to wrap the items so that framework will log whatever the strategy wants
@@ -47,7 +47,7 @@ describe Migrations::Framework do
           enum = @items.each
 
           loop do
-            yield Migrations::Test::Strategy::Item.new(enum.next)
+            yield KitCat::Test::Strategy::Item.new(enum.next)
           end
         end
 
@@ -73,7 +73,7 @@ describe Migrations::Framework do
   # end of hosting class example
   # ----------------------------------------------------
 
-  let!(:test_strategy_class) { Migrations::Test::Strategy }
+  let!(:test_strategy_class) { KitCat::Test::Strategy }
   let!(:failed_items) { [] }
   let(:strategy) do
     result = test_strategy_class.new
@@ -375,7 +375,7 @@ describe Migrations::Framework do
                                                                     # + lines to process
 
           log_lines[2..(2 + strategy.criteria.count - 1)].each_with_index do |log_line, index|
-            expect(log_line).to include("successfully processed item: #{Migrations::Test::Strategy::Item.new(strategy.items[index]).to_log}")
+            expect(log_line).to include("successfully processed item: #{KitCat::Test::Strategy::Item.new(strategy.items[index]).to_log}")
           end
         end
 
@@ -392,11 +392,11 @@ describe Migrations::Framework do
                                               # + more for the processed items
 
             log_lines[2..(2 + strategy.items.find_index(failed_items[0]).to_i - 1)].each_with_index do |log_line, index|
-              expect(log_line).to include("successfully processed item: #{Migrations::Test::Strategy::Item.new(strategy.items[index]).to_log}")
+              expect(log_line).to include("successfully processed item: #{KitCat::Test::Strategy::Item.new(strategy.items[index]).to_log}")
             end
 
             # note that last line is for the end of processing
-            expect(log_lines[-2]).to include("error while processing item: #{Migrations::Test::Strategy::Item.new(strategy.items.select {|i| failed_items.include?(i)}.first).to_log}")
+            expect(log_lines[-2]).to include("error while processing item: #{KitCat::Test::Strategy::Item.new(strategy.items.select {|i| failed_items.include?(i)}.first).to_log}")
           end
         end
       end
