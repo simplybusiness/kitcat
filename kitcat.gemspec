@@ -12,7 +12,9 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency 'ruby-progressbar'
   spec.add_runtime_dependency 'activemodel'
+
   spec.add_development_dependency 'rspec'
   spec.add_development_dependency 'pry'
   spec.add_development_dependency 'timecop'
+  spec.add_development_dependency "coveralls"
 end
