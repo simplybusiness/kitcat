@@ -1,21 +1,21 @@
-Gem::Specification.new do |spec|
-  spec.name        = 'kitcat'
-  spec.version     = '0.0.0'
-  spec.summary     = 'a framework to support data processing'
-  spec.description = 'initially created for data migrations. Provides logging, progess bar and graceful handling'
-  spec.authors     = ['Simply Business']
-  spec.email       = ['tech@simplybusiness.co.uk']
-  spec.homepage    = 'https://github.com/simplybusiness/kitcat'
-  spec.license     = 'MIT'
-  spec.files       = Dir['lib/   *.rb']
-  require_paths    = ["lib"]
+Gem::Specification.new do |gem|
+  gem.name          = 'kitcat'
+  gem.version       = '0.0.0'
+  gem.summary       = 'a framework to support data processing'
+  gem.description   = 'initially created for data migrations. Provides logging, progess bar and graceful handling'
+  gem.authors       = ["Simply Business"]
+  gem.email         = ["tech@simplybusiness.co.uk"]
+  gem.homepage      = 'https://github.com/simplybusiness/kitcat'
+  gem.files         = Dir["Rakefile", "{lib, spec}/**/*.rb", "LICENSE", "*.md"]
+  gem.require_path  = 'lib'
 
-  spec.add_runtime_dependency 'ruby-progressbar'
-  spec.add_runtime_dependency 'activemodel'
+  gem.add_runtime_dependency 'ruby-progressbar'
+  gem.add_runtime_dependency 'activemodel'
+  gem.add_runtime_dependency 'require_all'
 
-  spec.add_development_dependency 'rspec'
-  spec.add_development_dependency 'pry'
-  spec.add_development_dependency 'timecop'
-  spec.add_development_dependency 'coveralls'
-  spec.add_development_dependency 'rake'
+  gem.add_development_dependency 'rspec'
+  gem.add_development_dependency 'pry'
+  gem.add_development_dependency 'timecop'
+  gem.add_development_dependency 'coveralls'
+  gem.add_development_dependency 'rake'
 end
