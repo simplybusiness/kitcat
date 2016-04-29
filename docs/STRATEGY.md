@@ -5,22 +5,15 @@
 However, in order for a migration script to use this framework, it needs to instantiate
 a migration strategy, fulfilling the following requirements:
 
-1. Needs to respond to `#process(item)`. It should implement a `#process(item)` method that
-   will be called by the framework. The method needs to return `true` if the item is processed successfully,
-   or `false` if it is not processed successfully. This is taken into account by the framework to keep
-   track of the items that have been processed successfully. Also, framework makes sure to log the
-   correct lines in the log file accordingly.
-
-2. Needs to respond to `#criteria`. This should be returning a collection. In fact, an object that responds to `#each`
+1. Needs to respond to `#criteria`. This should be returning a collection. In fact, an object that responds to `#each`
    and to `#count`. The `#each` called on the result of `#criteria` needs to return a Ruby `Enumerator` or something that
    responds to `#next` giving the next item to be processed.
    So, if we have a `migration_strategy`, then
 
    1. `criteria.count` needs to be implemented so that its result is the number of items to process in total. Framework needs
-       that in order to be able to display a progress bar that would correspond to the actual work load. Otherwise, this is
-       not.<br/>
+       that in order to be able to display a progress bar that would correspond to the actual work load.<br/>
        *Hint:* Think about whether you want the collection `#count` implementation to be counting by eagerly loading
-       all the elements of the collection in memory, or, by letting the `#count` being implemented more efficiently. For
+       all the elements of the collection in memory, or, by letting the `#count` be implemented more efficiently. For
        example, if you are querying a database, it might be more appropriate to let the database server do the count for you,
        rather than bringing the whole collection into memory and then counting using Ruby code.<br/>
        **Important:** Just for your information and in order for you to be cautious on the implementation, if one calls `#count`,
@@ -40,12 +33,17 @@ a migration strategy, fulfilling the following requirements:
    See later on for two examples migration strategies. One that is using the MongoID interface to access a Mongo DB.
    And another one using the Mongo Ruby Driver for the same database.
 
-4. Optionally, responds to `#interrupt_callback`. This method will not be normally called. It will be called by
+1. Needs to respond to `#process(item)`. It should implement a `#process(item)` method that
+   will be called by the framework. The method needs to return `true` if the item is processed successfully,
+   or `false` if it is not processed successfully. This is taken into account by the framework to keep
+   track of the items that have been processed successfully. Also the framework makes sure to log the
+   correct lines in the log file accordingly.
+
+1. Optionally, responds to `#interrupt_callback`. This method will not be normally called. It will be called by
    the framework if the user running the migration script interrupts it by hitting the key combination Ctrl+C or by sending
    the signal `SIGTERM (15)` or `SIGINT (2)` (e.g. with `kill process_id` the `SIGTERM` is sent). Hence, the migration strategy
    is responsible to carry out clean up actions for the premature termination of the migration script. It needs to make sure
    that the script finishes gracefully.
-
 
 ## Example Migration Strategies
 
@@ -56,13 +54,13 @@ You can read here two example migration strategies for MongoDB.
 ``` ruby
 class MigrationStrategy
 
+  def criteria
+    query
+  end
+  
   def process(policy)
     sleep 1
     true
-  end
-
-  def criteria
-    query
   end
 
   def interrupt_callback
@@ -88,13 +86,13 @@ end
 ``` ruby
 class MigrationStrategy
 
+  def criteria
+     query
+  end
+  
   def process(policy)
     sleep 1
     true
-  end
-
-  def criteria
-     query
   end
 
   def interrupt_callback
@@ -134,11 +132,6 @@ class MigrationStrategy
     end
   end
 
-  def process(policy)
-    sleep 1
-    true
-  end
-
   def criteria
     return enum_for(:criteria) unless block_given?
 
@@ -147,6 +140,11 @@ class MigrationStrategy
     loop do
       yield MigrationStrategy::PolicyItemWrapper.new(enumeration.next)
     end
+  end
+  
+  def process(policy)
+    sleep 1
+    true
   end
 
   def interrupt_callback
