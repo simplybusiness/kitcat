@@ -11,10 +11,8 @@ Gem::Specification.new do |gem|
 
   gem.add_runtime_dependency 'ruby-progressbar'
   gem.add_runtime_dependency 'activemodel'
-  gem.add_runtime_dependency 'require_all'
 
   gem.add_development_dependency 'rspec'
-  gem.add_development_dependency 'pry'
   gem.add_development_dependency 'timecop'
   gem.add_development_dependency 'coveralls'
   gem.add_development_dependency 'rake'

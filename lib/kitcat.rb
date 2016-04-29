@@ -1,2 +1,1 @@
-require 'require_all'
-require_rel 'kitcat'
+Dir["./kitcat/*.rb"].each {|file| require file }
