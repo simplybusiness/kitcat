@@ -1,1 +1,2 @@
-Dir["./kitcat/*.rb"].each {|file| require file }
+require 'kitcat/framework'
+require 'kitcat/terminal_width_calculator'
