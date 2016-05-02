@@ -6,7 +6,8 @@ module KitCat
   class Framework
     attr_reader :last_item_processed,
                 :migration_name,
-                :number_of_items_processed
+                :number_of_items_processed,
+                :migration_strategy
 
     # @params migration_strategy {Object}
     #           Instance implementing the methods of +KitCat::Callbacks+
@@ -27,10 +28,11 @@ module KitCat
     #           #print, #flush, #tty? and #puts.
     #           It is taken into account only if progress bar is enabled.
     #
-    def initialize(migration_strategy, migration_name: nil,
-                                       number_of_items_to_process: nil,
-                                       progress_bar: true,
-                                       progress_bar_output: STDOUT)
+    def initialize(migration_strategy,
+                   migration_name: nil,
+                   number_of_items_to_process: nil,
+                   progress_bar: true,
+                   progress_bar_output: STDOUT)
       @migration_strategy         = migration_strategy
       @migration_name             = build_migration_name(migration_name)
       @number_of_items_to_process = number_of_items_to_process
@@ -62,7 +64,7 @@ module KitCat
         end
       end
     rescue SignalException => ex
-      handle_user_interrupt(ex) or raise
+      handle_user_interrupt(ex) || raise
     ensure
       end_logging
     end
@@ -108,24 +110,22 @@ module KitCat
       Time.now.to_s(:number)
     end
 
-    def migration_strategy
-      @migration_strategy
-    end
-
     def build_migration_name(migration_name)
       result = migration_name || migration_strategy.class.name.delete(':').underscore.upcase
       result.gsub(/\W/, '').upcase
     end
 
     def initialize_progress_bar(progress_bar_flag, output)
-      if progress_bar_flag.nil? || !!progress_bar_flag
-        @progress_bar = ProgressBar.create(total:  migration_strategy.criteria.count,
-                                           output: output,
-                                           progress_mark: " ",
-                                           remainder_mark: "-",
-                                           length: get_terminal_width,
-                                           format: "%a %bᗧ%i %p%% %e")
-      end
+      create_progress_bar(output) if progress_bar_flag || progress_bar_flag.nil?
+    end
+
+    def create_progress_bar(output)
+      @progress_bar = ProgressBar.create(total:  migration_strategy.criteria.count,
+                                         output: output,
+                                         progress_mark: " ",
+                                         remainder_mark: "-",
+                                         length: terminal_width,
+                                         format: "%a %bᗧ%i %p%% %e")
     end
 
     def start_logging
@@ -145,7 +145,7 @@ module KitCat
     end
 
     def log_failure(item)
-      log_line(item) {|method| logger.error "...error while processing item: #{item.try(method)}" }
+      log_line(item) { |method| logger.error "...error while processing item: #{item.try(method)}" }
     end
 
     def log_line(item)
@@ -185,7 +185,7 @@ module KitCat
     # The following is to correctly calculate the width of the terminal
     # so that the progress bar occupies the whole width
     #
-    def get_terminal_width
+    def terminal_width
       TerminalWidthCalculator.calculate
     end
   end

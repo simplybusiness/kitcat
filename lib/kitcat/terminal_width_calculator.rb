@@ -17,7 +17,7 @@ module KitCat
         elsif tput_case?
           `tput cols`.to_i
         elsif stty_case?
-          `stty size`.scan(/\d+/).map { |s| s.to_i }[1]
+          `stty size`.scan(/\d+/).map(&:to_i)[1]
         end
       rescue
         0
@@ -32,7 +32,7 @@ module KitCat
       end
 
       def shell_command_exists?(command)
-        ENV['PATH'].split(File::PATH_SEPARATOR).any?{|d| File.exists? File.join(d, command) }
+        ENV['PATH'].split(File::PATH_SEPARATOR).any? { |d| File.exist? File.join(d, command) }
       end
     end
   end

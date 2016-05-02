@@ -80,10 +80,10 @@ describe KitCat::Framework do
     result.failed_items = failed_items
     result
   end
-  let(:migration_name)             { nil                              }
-  let(:number_of_items_to_process) { nil                              }
-  let(:progress_bar)               { true                             }
+  let(:migration_name)             { nil }
+  let(:number_of_items_to_process) { nil }
   let(:progress_bar_output)        { double('printer').as_null_object }
+  let(:progress_bar)               { nil }
 
   subject do
     described_class.new(strategy, migration_name:             migration_name,
@@ -237,7 +237,7 @@ describe KitCat::Framework do
 
       context 'when the number of items to process is set' do
         let(:number_of_items_to_process) { 5 }
-        let(:last_item_processed) { strategy.items[number_of_items_to_process - 1]}
+        let(:last_item_processed) { strategy.items[number_of_items_to_process - 1] }
 
         context 'and it is less than total number of items' do
           before do
@@ -280,7 +280,6 @@ describe KitCat::Framework do
 
   describe '#progress_bar?' do
     context 'when framework instantiated without progress bar option' do
-      let(:progress_bar) { nil }
       it 'returns true that progress bar is enabled' do
         expect(subject.progress_bar?).to eq(true)
       end
@@ -295,7 +294,7 @@ describe KitCat::Framework do
     end
 
     context 'when framework instantiated with progress bar option on' do
-      let(:progress_bar) { true }
+      let(:progress_bar)  { true }
 
       it 'returns true that progress bar is enabled' do
         expect(subject.progress_bar?).to eq(true)
@@ -396,7 +395,7 @@ describe KitCat::Framework do
             end
 
             # note that last line is for the end of processing
-            expect(log_lines[-2]).to include("error while processing item: #{KitCat::Test::Strategy::Item.new(strategy.items.select {|i| failed_items.include?(i)}.first).to_log}")
+            expect(log_lines[-2]).to include("error while processing item: #{KitCat::Test::Strategy::Item.new(strategy.items.select { |i| failed_items.include?(i)}.first).to_log }")
           end
         end
       end
@@ -417,7 +416,7 @@ describe KitCat::Framework do
         end
 
         context 'when there is an item that cannot be processed' do
-          let(:failed_items) { [ (1..minimum_number_of_items).to_a.sample ] }
+          let(:failed_items) { [(1..minimum_number_of_items).to_a.sample] }
 
           it 'increments progress bar only for the processed items' do
             expect do
