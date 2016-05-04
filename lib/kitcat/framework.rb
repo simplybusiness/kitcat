@@ -39,6 +39,9 @@ module KitCat
     end
 
     def execute
+      @interrupted = false
+      Signal.trap('TERM') { @interrupted = true }
+      Signal.trap('INT') { @interrupted = true }
       start_logging
 
       @number_of_items_processed = 0
@@ -60,10 +63,11 @@ module KitCat
 
           break
         end
+        if @interrupted
+          handle_user_interrupt
+          break
+        end
       end
-    rescue SignalException => ex
-      handle_user_interrupt(ex) or raise
-    ensure
       end_logging
     end
 
@@ -145,7 +149,7 @@ module KitCat
     end
 
     def log_failure(item)
-      log_line(item) {|method| logger.error "...error while processing item: #{item.try(method)}" }
+      log_line(item) { |method| logger.error "...error while processing item: #{item.try(method)}" }
     end
 
     def log_line(item)
@@ -170,16 +174,11 @@ module KitCat
       @progress_bar.increment
     end
 
-    def handle_user_interrupt(signal)
-      if [Signal.list["INT"], Signal.list["TERM"]].include?(signal.signo)
-        log_interrupt_callback_start
-
-        migration_strategy.interrupt_callback if migration_strategy.respond_to?(:interrupt_callback)
-
-        log_interrupt_callback_finish
-
-        true
-      end
+    def handle_user_interrupt
+      log_interrupt_callback_start
+      migration_strategy.interrupt_callback if migration_strategy.respond_to?(:interrupt_callback)
+      log_interrupt_callback_finish
+      true
     end
 
     # The following is to correctly calculate the width of the terminal
