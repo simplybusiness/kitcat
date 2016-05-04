@@ -1,7 +1,6 @@
-require "spec_helper"
+require 'spec_helper'
 
 describe KitCat::Framework do
-
   # --------------------------------------------
   # hosting class example
   #
@@ -56,9 +55,7 @@ describe KitCat::Framework do
         # This callback is called before the end of the processing
         # when the user decides to prematurely interrupt the process.
         #
-        def interrupt_callback
-
-        end
+        def interrupt_callback; end
 
         private
 
@@ -114,9 +111,9 @@ describe KitCat::Framework do
     end
 
     context 'when migration name has non-word characters' do
-      let(:migration_name) { "   foo   _123_ bar  \r\n matcho"}
+      let(:migration_name) { "   foo   _123_ bar  \r\n matcho" }
       it 'removes them' do
-        expect(subject.migration_name).to eq("FOO_123_BARMATCHO")
+        expect(subject.migration_name).to eq('FOO_123_BARMATCHO')
       end
     end
   end
@@ -286,7 +283,7 @@ describe KitCat::Framework do
     end
 
     context 'when framework instantiated with progress bar option off' do
-      let(:progress_bar)  { false }
+      let(:progress_bar) { false }
 
       it 'returns false that progress bar is disabled' do
         expect(subject.progress_bar?).to eq(false)
@@ -294,7 +291,7 @@ describe KitCat::Framework do
     end
 
     context 'when framework instantiated with progress bar option on' do
-      let(:progress_bar)  { true }
+      let(:progress_bar) { true }
 
       it 'returns true that progress bar is enabled' do
         expect(subject.progress_bar?).to eq(true)
@@ -324,18 +321,18 @@ describe KitCat::Framework do
         subject.execute
 
         log_lines = File.readlines(subject.log_file_path)
-        expect(log_lines[1]).to include("Start Processing...")
+        expect(log_lines[1]).to include('Start Processing...')
       end
 
       it 'generates a log file with last payload line as ...end of processing' do
         subject.execute
 
         log_lines = File.readlines(subject.log_file_path)
-        expect(log_lines[-1]).to include("...end of processing")
+        expect(log_lines[-1]).to include('...end of processing')
       end
 
       context 'when process is interrupted with SIGINT or SIGTERM' do
-        ['INT', 'TERM'].each do |signal|
+        %w(INT TERM).each do |signal|
           before do
             allow(strategy).to receive(:process) do
               Process.kill(signal, Process.pid)
@@ -351,14 +348,14 @@ describe KitCat::Framework do
             subject.execute
 
             log_lines = File.readlines(subject.log_file_path)
-            expect(log_lines[-3]).to include("user interrupted, calling interrupt callback on migration strategy...")
+            expect(log_lines[-3]).to include('user interrupted, calling interrupt callback on migration strategy...')
           end
 
           it 'generates a log file with second to last payload line as ...end of interrupt callback' do
             subject.execute
 
             log_lines = File.readlines(subject.log_file_path)
-            expect(log_lines[-2]).to include("...end of interrupt callback after user interruption")
+            expect(log_lines[-2]).to include('...end of interrupt callback after user interruption')
           end
         end
       end
@@ -385,7 +382,7 @@ describe KitCat::Framework do
         end
 
         context 'when there is an item that cannot be processed' do
-          let(:failed_items) { [ (1..minimum_number_of_items).to_a.sample ] }
+          let(:failed_items) { [(1..minimum_number_of_items).to_a.sample] }
 
           it 'generates a log file with a failure line for the particular item at the end' do
             subject.execute
@@ -401,7 +398,7 @@ describe KitCat::Framework do
             end
 
             # note that last line is for the end of processing
-            expect(log_lines[-2]).to include("error while processing item: #{KitCat::Test::Strategy::Item.new(strategy.items.select { |i| failed_items.include?(i)}.first).to_log }")
+            expect(log_lines[-2]).to include("error while processing item: #{KitCat::Test::Strategy::Item.new(strategy.items.select { |i| failed_items.include?(i) }.first).to_log}")
           end
         end
       end
@@ -435,7 +432,7 @@ describe KitCat::Framework do
 
     context 'when process is interrupted' do
       before do
-        #we are simulating a user interrupt during item processing
+        # we are simulating a user interrupt during item processing
         allow(strategy).to receive(:process) do
           Process.kill('INT', Process.pid)
           sleep(1)

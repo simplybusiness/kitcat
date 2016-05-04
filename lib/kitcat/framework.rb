@@ -126,18 +126,18 @@ module KitCat
     def create_progress_bar(output)
       @progress_bar = ProgressBar.create(total:  migration_strategy.criteria.count,
                                          output: output,
-                                         progress_mark: " ",
-                                         remainder_mark: "-",
+                                         progress_mark: ' ',
+                                         remainder_mark: '-',
                                          length: terminal_width,
                                          format: "%a %bᗧ%i %p%% %e")
     end
 
     def start_logging
-      logger.info "Start Processing..."
+      logger.info 'Start Processing...'
     end
 
     def end_logging
-      logger.info "...end of processing"
+      logger.info '...end of processing'
     end
 
     def logger
@@ -158,11 +158,11 @@ module KitCat
     end
 
     def log_interrupt_callback_start
-      logger.info "...user interrupted, calling interrupt callback on migration strategy..."
+      logger.info '...user interrupted, calling interrupt callback on migration strategy...'
     end
 
     def log_interrupt_callback_finish
-      logger.info "......end of interrupt callback after user interruption"
+      logger.info '......end of interrupt callback after user interruption'
     end
 
     def process_more?
