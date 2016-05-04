@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/simplybusiness/kitcat.svg?branch=master)](https://travis-ci.org/simplybusiness/kitcat)
 # KitCat
 
 *Sometimes schema migrations are just not enough.*

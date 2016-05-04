@@ -334,26 +334,32 @@ describe KitCat::Framework do
         expect(log_lines[-1]).to include("...end of processing")
       end
 
-      context 'when process is interrupted with SIGINT' do
-        before do
-          allow(strategy).to receive(:process).and_raise(Interrupt)
-        end
+      context 'when process is interrupted with SIGINT or SIGTERM' do
+        ['INT', 'TERM'].each do |signal|
+          before do
+            allow(strategy).to receive(:process) do
+              Process.kill(signal, Process.pid)
+              sleep(1)
+              true
+            end
+          end
 
-        it 'generates a log file with third to last payload line as calling of interrupt callback process' do
-          # make sure that the strategy clean up does not add any lines for this test
-          allow(strategy).to receive(:interrupt_callback)
+          it 'generates a log file with third to last payload line as calling of interrupt callback process' do
+            # make sure that the strategy clean up does not add any lines for this test
+            allow(strategy).to receive(:interrupt_callback)
 
-          subject.execute
+            subject.execute
 
-          log_lines = File.readlines(subject.log_file_path)
-          expect(log_lines[-3]).to include("user interrupted, calling interrupt callback on migration strategy...")
-        end
+            log_lines = File.readlines(subject.log_file_path)
+            expect(log_lines[-3]).to include("user interrupted, calling interrupt callback on migration strategy...")
+          end
 
-        it 'generates a log file with second to last payload line as ...end of interrupt callback' do
-          subject.execute
+          it 'generates a log file with second to last payload line as ...end of interrupt callback' do
+            subject.execute
 
-          log_lines = File.readlines(subject.log_file_path)
-          expect(log_lines[-2]).to include("...end of interrupt callback after user interruption")
+            log_lines = File.readlines(subject.log_file_path)
+            expect(log_lines[-2]).to include("...end of interrupt callback after user interruption")
+          end
         end
       end
 
@@ -369,9 +375,9 @@ describe KitCat::Framework do
 
           log_lines = File.readlines(subject.log_file_path)
           expect(log_lines.size).to eq(3 + strategy.criteria.count) #   1 for the default log line at start
-                                                                    # + 1 for the start processing
-                                                                    # + 1 for the end processing
-                                                                    # + lines to process
+          # + 1 for the start processing
+          # + 1 for the end processing
+          # + lines to process
 
           log_lines[2..(2 + strategy.criteria.count - 1)].each_with_index do |log_line, index|
             expect(log_line).to include("successfully processed item: #{KitCat::Test::Strategy::Item.new(strategy.items[index]).to_log}")
@@ -386,9 +392,9 @@ describe KitCat::Framework do
 
             log_lines = File.readlines(subject.log_file_path)
             expect(log_lines.size).to be >= 3 #   1 for the default log line at start
-                                              # + 1 for the start processing
-                                              # + 1 for the end of processing
-                                              # + more for the processed items
+            # + 1 for the start processing
+            # + 1 for the end of processing
+            # + more for the processed items
 
             log_lines[2..(2 + strategy.items.find_index(failed_items[0]).to_i - 1)].each_with_index do |log_line, index|
               expect(log_line).to include("successfully processed item: #{KitCat::Test::Strategy::Item.new(strategy.items[index]).to_log}")
@@ -429,7 +435,12 @@ describe KitCat::Framework do
 
     context 'when process is interrupted' do
       before do
-        allow(strategy).to receive(:process).and_raise(Interrupt)
+        #we are simulating a user interrupt during item processing
+        allow(strategy).to receive(:process) do
+          Process.kill('INT', Process.pid)
+          sleep(1)
+          true
+        end
       end
 
       context 'when strategy does not support interrupt clean up' do
