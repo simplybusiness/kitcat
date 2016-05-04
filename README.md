@@ -1,5 +1,8 @@
 # KitCat
 
+[![Coverage Status](https://coveralls.io/repos/github/simplybusiness/kitcat/badge.svg?branch=develop)](https://coveralls.io/github/simplybusiness/kitcat?branch=develop)
+[![Code Climate](https://codeclimate.com/github/simplybusiness/kitcat/badges/gpa.svg)](https://codeclimate.com/github/simplybusiness/kitcat)
+
 *Sometimes schema migrations are just not enough.*
 
 Data migration framework written in plain Ruby. Although originally created for migrating data in MongoDb, currently it is pretty **generic**, since it **does not depend** on any web framework.
