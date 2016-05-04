@@ -3,6 +3,7 @@ Gem::Specification.new do |gem|
   gem.version       = '1.0.0'
   gem.summary       = 'a framework to support data processing'
   gem.description   = 'initially created for data migrations. Provides logging, progess bar and graceful handling'
+  gem.licenses      = ['MIT']
   gem.authors       = ['Simply Business']
   gem.email         = ['tech@simplybusiness.co.uk']
   gem.homepage      = 'https://github.com/simplybusiness/kitcat'
