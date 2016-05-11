@@ -16,26 +16,33 @@ describe KitCat::Framework do
           end
         end
 
-        attr_reader :items          # not necessary for the framework to work
-        attr_accessor :failed_items # not necessary for the framework to work
+        attr_reader :items            # not necessary for the framework to work, it's here to ease testing
+        attr_accessor :failed_item    # not necessary for the framework to work, it's here to ease testing
+        attr_accessor :exception_item # not necessary for the framework to work, it's here to ease testing
 
         # This particular Strategy is initialized in such a way in order to ease the testing.
         # It will be holding a list of continuous integers, starting from +1+ and incrementing
         # by 1. Actually, it will be [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].
         #
-        # The +failed_items+ is a helper to test the Framework for the items that fail.
-        # You will see that the some tests of the Framework will set this array to the integers
-        # that will be supposed to be failing items.
+        # The +failed_item+ is a helper to test the Framework for the items that fail.
+        # You will see that some tests of the Framework will set this to an integer
+        # that will be supposed to be failing item.
+        #
+        # The +exception_item+ is a helper to test the Framework for the item that will make process raise an exception.
+        # You will see that some tests of the Framework will set this to an integer
+        # that will be supposed to be items raising exceptions.
         #
         def initialize
           @items = (1..count).to_a
-          @failed_items = []
+          @failed_item = -1
+          @exception_item = -1
         end
 
         # need to implement in order to support framework
         #
         def process(item)
-          !@failed_items.include?(item.item)
+          raise StandardError.new('Cannot process this item') if @exception_item == item.item
+          @failed_item != item.item
         end
 
         # need to implement in order to support framework
@@ -71,10 +78,12 @@ describe KitCat::Framework do
   # ----------------------------------------------------
 
   let!(:test_strategy_class) { KitCat::Test::Strategy }
-  let!(:failed_items) { [] }
+  let!(:failed_item) { -1 }
+  let!(:exception_item) { -1 }
   let(:strategy) do
     result = test_strategy_class.new
-    result.failed_items = failed_items
+    result.failed_item = failed_item
+    result.exception_item = exception_item
     result
   end
   let(:migration_name)             { nil }
@@ -304,7 +313,7 @@ describe KitCat::Framework do
     # ordered array of continuous series of integers starting from 1.
     # [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     #
-    # This has been done in order to simply the testing. We do not believe it affects or bias the
+    # This has been done in order to simplify the testing. We do not believe it affects or bias the
     # testing of the Framework itself.
     #
 
@@ -382,7 +391,7 @@ describe KitCat::Framework do
         end
 
         context 'when there is an item that cannot be processed' do
-          let(:failed_items) { [(1..minimum_number_of_items).to_a.sample] }
+          let(:failed_item) { (1..minimum_number_of_items).to_a.sample }
 
           it 'generates a log file with a failure line for the particular item at the end' do
             subject.execute
@@ -393,12 +402,35 @@ describe KitCat::Framework do
             # + 1 for the end of processing
             # + more for the processed items
 
-            log_lines[2..(2 + strategy.items.find_index(failed_items[0]).to_i - 1)].each_with_index do |log_line, index|
+            log_lines[2..(2 + strategy.items.find_index(failed_item).to_i - 1)].each_with_index do |log_line, index|
               expect(log_line).to include("successfully processed item: #{KitCat::Test::Strategy::Item.new(strategy.items[index]).to_log}")
             end
 
             # note that last line is for the end of processing
-            expect(log_lines[-2]).to include("error while processing item: #{KitCat::Test::Strategy::Item.new(strategy.items.select { |i| failed_items.include?(i) }.first).to_log}")
+            expect(log_lines[-2]).to include("error while processing item: #{KitCat::Test::Strategy::Item.new(strategy.items.select { |i| failed_item == i }.first).to_log}")
+          end
+        end
+
+        context 'when there is an item that makes strategy raise an exception' do
+          let(:exception_item) { (1..minimum_number_of_items).to_a.sample }
+
+          it 'generates a log file with a failure line for the particular item at the end' do
+            expect do
+              subject.execute
+            end.to raise_error { StandardError }
+
+            log_lines = File.readlines(subject.log_file_path)
+            expect(log_lines.size).to be >= 3 #   1 for the default log line at start
+            # + 1 for the start processing
+            # + 1 for the end of processing
+            # + more for the processed items
+
+            log_lines[2..(2 + strategy.items.find_index(exception_item).to_i - 1)].each_with_index do |log_line, index|
+              expect(log_line).to include("successfully processed item: #{KitCat::Test::Strategy::Item.new(strategy.items[index]).to_log}")
+            end
+
+            # note that last line is for the end of processing
+            expect(log_lines[-2]).to include("error while processing item: #{KitCat::Test::Strategy::Item.new(strategy.items.select { |i| exception_item == i }.first).to_log}")
           end
         end
       end
@@ -419,12 +451,12 @@ describe KitCat::Framework do
         end
 
         context 'when there is an item that cannot be processed' do
-          let(:failed_items) { [(1..minimum_number_of_items).to_a.sample] }
+          let(:failed_item) { (1..minimum_number_of_items).to_a.sample }
 
           it 'increments progress bar only for the processed items' do
             expect do
               subject.execute
-            end.to change { subject.progress }.by(strategy.items.find_index(failed_items[0]).to_i)
+            end.to change { subject.progress }.by(strategy.items.find_index(failed_item).to_i)
           end
         end
       end

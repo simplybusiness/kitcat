@@ -49,27 +49,34 @@ module KitCat
       @number_of_items_processed = 0
 
       items.each do |item|
-        if migration_strategy.process(item)
+        begin
+          if migration_strategy.process(item)
 
-          log_success(item)
+            log_success(item)
 
-          @number_of_items_processed += 1
+            @number_of_items_processed += 1
 
-          increment_progress_bar
+            increment_progress_bar
 
-          @last_item_processed = item
+            @last_item_processed = item
 
-          break unless process_more?
-        else
+            break unless process_more?
+          else
+            log_failure(item)
+
+            break
+          end
+          if @interrupted
+            handle_user_interrupt
+            break
+          end
+        rescue StandardError
           log_failure(item)
-
-          break
-        end
-        if @interrupted
-          handle_user_interrupt
-          break
+          raise
         end
       end
+
+    ensure
       end_logging
     end
 
