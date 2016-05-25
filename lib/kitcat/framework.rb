@@ -1,13 +1,20 @@
 require 'ruby-progressbar'
 require 'active_model'
 require 'active_support/core_ext'
+require 'kitcat/logging'
 
 module KitCat
   class Framework
     attr_reader :last_item_processed,
-                :migration_name,
                 :number_of_items_processed,
-                :migration_strategy
+                :migration_strategy,
+                :logging
+
+    delegate :log_file_path,
+             :start_logging, :end_logging,
+             :log_success, :log_failure,
+             :log_interrupt_callback_start,
+             :log_interrupt_callback_finish, to: :logging
 
     # @params migration_strategy {Object}
     #           Instance implementing the methods of +KitCat::Callbacks+
@@ -34,10 +41,10 @@ module KitCat
                    progress_bar: true,
                    progress_bar_output: STDOUT)
       @migration_strategy         = migration_strategy
-      @migration_name             = build_migration_name(migration_name)
       @number_of_items_to_process = number_of_items_to_process
       @last_item_processed        = nil
       @progress_bar               = initialize_progress_bar(progress_bar, progress_bar_output)
+      @logging                    = KitCat::Logging.new(migration_strategy, migration_name)
     end
 
     def execute
@@ -57,10 +64,6 @@ module KitCat
 
     def number_of_items_to_process
       @number_of_items_to_process ||= migration_strategy.criteria.count
-    end
-
-    def log_file_path
-      @log_file_path ||= File.join(log_dir, build_log_file_name)
     end
 
     def progress_bar?
@@ -128,23 +131,6 @@ module KitCat
       end
     end
 
-    def log_dir
-      @log_dir ||= FileUtils.mkdir_p(File.join(Dir.pwd, 'log'))
-    end
-
-    def build_log_file_name
-      "migration-#{migration_name}-#{timestamp}.log"
-    end
-
-    def timestamp
-      Time.now.to_s(:number)
-    end
-
-    def build_migration_name(migration_name)
-      result = migration_name || migration_strategy.class.name.delete(':').underscore.upcase
-      result.gsub(/\W/, '').upcase
-    end
-
     def initialize_progress_bar(progress_bar_flag, output)
       create_progress_bar(output) if progress_bar_flag || progress_bar_flag.nil?
     end
@@ -156,39 +142,6 @@ module KitCat
                                          remainder_mark: '-',
                                          length: terminal_width,
                                          format: "%a %bᗧ%i %p%% %e")
-    end
-
-    def start_logging
-      logger.info 'Start Processing...'
-    end
-
-    def end_logging
-      logger.info '...end of processing'
-    end
-
-    def logger
-      @logger ||= Logger.new(log_file_path)
-    end
-
-    def log_success(item)
-      log_line(item) { |method| logger.info "...successfully processed item: #{item.try(method)}" }
-    end
-
-    def log_failure(item)
-      log_line(item) { |method| logger.error "...error while processing item: #{item.try(method)}" }
-    end
-
-    def log_line(item)
-      method = item.respond_to?(:to_log) ? :to_log : :to_s
-      yield method
-    end
-
-    def log_interrupt_callback_start
-      logger.info '...user interrupted, calling interrupt callback on migration strategy...'
-    end
-
-    def log_interrupt_callback_finish
-      logger.info '......end of interrupt callback after user interruption'
     end
 
     def process_more?

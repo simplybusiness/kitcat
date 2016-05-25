@@ -102,31 +102,6 @@ describe KitCat::Framework do
     FileUtils.rm_rf(subject.log_file_path)
   end
 
-  describe '#migration_name' do
-    context 'when initialized without a migration name' do
-      let(:migration_name) { nil }
-
-      it 'returns a name based on strategy class name' do
-        expect(subject.migration_name).to eq(strategy.class.name.delete(':').underscore.upcase)
-      end
-    end
-
-    context 'when initialized with a migration name' do
-      let(:migration_name) { SecureRandom.hex }
-
-      it 'returns that name' do
-        expect(subject.migration_name).to eq(migration_name.upcase)
-      end
-    end
-
-    context 'when migration name has non-word characters' do
-      let(:migration_name) { "   foo   _123_ bar  \r\n matcho" }
-      it 'removes them' do
-        expect(subject.migration_name).to eq('FOO_123_BARMATCHO')
-      end
-    end
-  end
-
   describe '#number_of_items_to_process' do
     context 'when number of items to process is set' do
       let(:number_of_items_to_process) { 5 }
@@ -269,17 +244,6 @@ describe KitCat::Framework do
 
         last_item_processed = subject.last_item_processed
         expect(last_item_processed).to be_nil
-      end
-    end
-  end
-
-  describe '#log_file_path' do
-    it 'returns a file name which is based on the migration name and timestamp' do
-      now = Time.now
-      timestamp = now.to_s(:number)
-
-      Timecop.freeze(now) do
-        expect(subject.log_file_path).to end_with("log/migration-#{subject.migration_name}-#{timestamp}.log")
       end
     end
   end
