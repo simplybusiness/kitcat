@@ -41,39 +41,14 @@ module KitCat
     end
 
     def execute
-      @interrupted = false
-      Signal.trap('TERM') { @interrupted = true }
-      Signal.trap('INT') { @interrupted = true }
+      trap_signals
+
       start_logging
 
       @number_of_items_processed = 0
 
       items.each do |item|
-        begin
-          if migration_strategy.process(item)
-
-            log_success(item)
-
-            @number_of_items_processed += 1
-
-            increment_progress_bar
-
-            @last_item_processed = item
-
-            break unless process_more?
-          else
-            log_failure(item)
-
-            break
-          end
-          if @interrupted
-            handle_user_interrupt
-            break
-          end
-        rescue StandardError
-          log_failure(item)
-          raise
-        end
+        break unless execute_for(item)
       end
 
     ensure
@@ -98,6 +73,50 @@ module KitCat
     end
 
     private
+
+    def execute_for(item)
+      begin
+        if migration_strategy.process(item)
+
+          commit_success(item)
+
+          return false unless process_more?
+        else
+          commit_failure(item)
+
+          return false
+        end
+        if @interrupted
+          handle_user_interrupt
+          return false
+        end
+      rescue StandardError
+        commit_failure(item)
+        raise
+      end
+
+      true
+    end
+
+    def commit_success(item)
+      log_success(item)
+
+      @number_of_items_processed += 1
+
+      increment_progress_bar
+
+      @last_item_processed = item
+    end
+
+    def commit_failure(item)
+      log_failure(item)
+    end
+
+    def trap_signals
+      @interrupted = false
+      Signal.trap('TERM') { @interrupted = true }
+      Signal.trap('INT') { @interrupted = true }
+    end
 
     def items
       return enum_for(:items) unless block_given?

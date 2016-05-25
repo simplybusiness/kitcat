@@ -41,7 +41,7 @@ describe KitCat::Framework do
         # need to implement in order to support framework
         #
         def process(item)
-          raise StandardError.new('Cannot process this item') if @exception_item == item.item
+          raise StandardError, 'Cannot process this item' if @exception_item == item.item
           @failed_item != item.item
         end
 
