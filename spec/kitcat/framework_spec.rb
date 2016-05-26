@@ -1,10 +1,10 @@
 require 'spec_helper'
 
-describe KitCat::Framework do
+describe Kitcat::Framework do
   # --------------------------------------------
   # hosting class example
   #
-  module KitCat
+  module Kitcat
     module Test
       class Strategy
         # Helping class that will use to wrap the items so that framework will log whatever the strategy wants
@@ -53,7 +53,7 @@ describe KitCat::Framework do
           enum = @items.each
 
           loop do
-            yield KitCat::Test::Strategy::Item.new(enum.next)
+            yield Kitcat::Test::Strategy::Item.new(enum.next)
           end
         end
 
@@ -77,7 +77,7 @@ describe KitCat::Framework do
   # end of hosting class example
   # ----------------------------------------------------
 
-  let!(:test_strategy_class) { KitCat::Test::Strategy }
+  let!(:test_strategy_class) { Kitcat::Test::Strategy }
   let!(:failed_item) { -1 }
   let!(:exception_item) { -1 }
   let(:strategy) do
@@ -350,7 +350,7 @@ describe KitCat::Framework do
           # + lines to process
 
           log_lines[2..(2 + strategy.criteria.count - 1)].each_with_index do |log_line, index|
-            expect(log_line).to include("successfully processed item: #{KitCat::Test::Strategy::Item.new(strategy.items[index]).to_log}")
+            expect(log_line).to include("successfully processed item: #{Kitcat::Test::Strategy::Item.new(strategy.items[index]).to_log}")
           end
         end
 
@@ -367,11 +367,11 @@ describe KitCat::Framework do
             # + more for the processed items
 
             log_lines[2..(2 + strategy.items.find_index(failed_item).to_i - 1)].each_with_index do |log_line, index|
-              expect(log_line).to include("successfully processed item: #{KitCat::Test::Strategy::Item.new(strategy.items[index]).to_log}")
+              expect(log_line).to include("successfully processed item: #{Kitcat::Test::Strategy::Item.new(strategy.items[index]).to_log}")
             end
 
             # note that last line is for the end of processing
-            expect(log_lines[-2]).to include("error while processing item: #{KitCat::Test::Strategy::Item.new(strategy.items.select { |i| failed_item == i }.first).to_log}")
+            expect(log_lines[-2]).to include("error while processing item: #{Kitcat::Test::Strategy::Item.new(strategy.items.select { |i| failed_item == i }.first).to_log}")
           end
         end
 
@@ -390,11 +390,11 @@ describe KitCat::Framework do
             # + more for the processed items
 
             log_lines[2..(2 + strategy.items.find_index(exception_item).to_i - 1)].each_with_index do |log_line, index|
-              expect(log_line).to include("successfully processed item: #{KitCat::Test::Strategy::Item.new(strategy.items[index]).to_log}")
+              expect(log_line).to include("successfully processed item: #{Kitcat::Test::Strategy::Item.new(strategy.items[index]).to_log}")
             end
 
             # note that last line is for the end of processing
-            expect(log_lines[-2]).to include("error while processing item: #{KitCat::Test::Strategy::Item.new(strategy.items.select { |i| exception_item == i }.first).to_log}")
+            expect(log_lines[-2]).to include("error while processing item: #{Kitcat::Test::Strategy::Item.new(strategy.items.select { |i| exception_item == i }.first).to_log}")
           end
         end
       end

@@ -1,5 +1,5 @@
-module KitCat
-  # +KitCat::Logging+ is used to encapsulate the functionality of +Framework+ related to
+module Kitcat
+  # +Kitcat::Logging+ is used to encapsulate the functionality of +Framework+ related to
   # logging.
   #
   # It needs to be initialized with the +migration_name+ because this is used to build the

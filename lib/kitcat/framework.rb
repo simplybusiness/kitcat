@@ -3,7 +3,7 @@ require 'active_model'
 require 'active_support/core_ext'
 require 'kitcat/logging'
 
-module KitCat
+module Kitcat
   class Framework
     attr_reader :last_item_processed,
                 :number_of_items_processed,
@@ -17,7 +17,7 @@ module KitCat
              :log_interrupt_callback_finish, to: :logging
 
     # @params migration_strategy {Object}
-    #           Instance implementing the methods of +KitCat::Callbacks+
+    #           Instance implementing the methods of +Kitcat::Callbacks+
     #
     #         migration_name {String} Optional.
     #           The name of the migration. Used as tag in log file name. If not given, a random/unique one is used.
@@ -44,7 +44,7 @@ module KitCat
       @number_of_items_to_process = number_of_items_to_process
       @last_item_processed        = nil
       @progress_bar               = initialize_progress_bar(progress_bar, progress_bar_output)
-      @logging                    = KitCat::Logging.new(migration_strategy, migration_name)
+      @logging                    = Kitcat::Logging.new(migration_strategy, migration_name)
     end
 
     def execute

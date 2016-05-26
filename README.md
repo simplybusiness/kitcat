@@ -2,7 +2,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/simplybusiness/kitcat/badge.svg?branch=develop)](https://coveralls.io/github/simplybusiness/kitcat?branch=develop)
 [![Code Climate](https://codeclimate.com/github/simplybusiness/kitcat/badges/gpa.svg)](https://codeclimate.com/github/simplybusiness/kitcat)
 
-# KitCat
+# Kitcat
 
 *Sometimes schema migrations are just not enough.*
 
@@ -22,7 +22,7 @@ Assuming that the migration strategy is implemented with a class `MigrationStrat
 
 ``` ruby
 migration_strategy  = MigrationStrategy.new
-migration_framework = KitCat::Framework.new(migration_strategy)
+migration_framework = Kitcat::Framework.new(migration_strategy)
 migration_framework.execute
 ```
 

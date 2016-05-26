@@ -1,16 +1,16 @@
 require 'spec_helper'
 
-describe KitCat::Logging do
-  module KitCat
+describe Kitcat::Logging do
+  module Kitcat
     class SampleStrategy
     end
   end
 
   subject do
-    KitCat::Logging.new(migration_strategy, migration_name)
+    Kitcat::Logging.new(migration_strategy, migration_name)
   end
 
-  let(:migration_strategy) { KitCat::SampleStrategy.new }
+  let(:migration_strategy) { Kitcat::SampleStrategy.new }
   let(:migration_name) { SecureRandom.hex }
 
   describe '#build_migration_name' do

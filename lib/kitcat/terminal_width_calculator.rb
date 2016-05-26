@@ -1,4 +1,4 @@
-module KitCat
+module Kitcat
   module TerminalWidthCalculator
     class << self
       def calculate
