@@ -1,6 +1,6 @@
 Gem::Specification.new do |gem|
   gem.name          = 'kitcat'
-  gem.version       = '1.0.1'
+  gem.version       = '1.0.2'
   gem.summary       = 'a framework to support data processing'
   gem.description   = 'initially created for data migrations. Provides logging, progess bar and graceful handling'
   gem.licenses      = ['MIT']
