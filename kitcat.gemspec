@@ -1,6 +1,11 @@
+# coding: utf-8
+lib = File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+require 'kitcat/version'
+
 Gem::Specification.new do |gem|
   gem.name          = 'kitcat'
-  gem.version       = '1.0.2'
+  gem.version       = Kitcat::VERSION
   gem.summary       = 'a framework to support data processing'
   gem.description   = 'initially created for data migrations. Provides logging, progess bar and graceful handling'
   gem.licenses      = ['MIT']
