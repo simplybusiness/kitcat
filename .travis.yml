@@ -2,20 +2,26 @@ sudo: false
 cache: bundler
 language: ruby
 rvm:
-  - 2.2
-  - 2.3.0
-  - ruby-head
-  - jruby-9.0.5.0
+- 2.2
+- 2.3.0
+- ruby-head
+- jruby-9.0.5.0
 env:
-  # this doesn't do anything for MRI or RBX, but it doesn't hurt them either
-  # for JRuby, it enables us to get more accurate coverage data
-  - JRUBY_OPTS="--debug"
+- JRUBY_OPTS="--debug"
 matrix:
   allow_failures:
-    - rvm: ruby-head
+  - rvm: ruby-head
   fast_finish: true
 before_install: gem update --remote bundler
 install:
-  - bundle install --retry=3
+- bundle install --retry=3
 script:
-  - bundle exec rake
+- bundle exec rake
+deploy:
+  provider: rubygems
+  api_key:
+    secure: rsAAPd+SK72E8V5kphNomXGuE7VET/fP51P7JX+TzFfiZEQn7jQiqCEOtRcAiJYIroAZR834Z0BT0DGIYp92Dfh5LvLaaYSN2KJwZU6VhAaRvU7czGFT+4ScJuqqZS1sBn1L2YNgM/dTQ2BNq1mJE22ezwcBzFuenMuLAQf6obNV3FEdn/Z2WLe0FsBvsb6B/PHrvCeZo3NSmYuiwMBbdUEdL3W2ffrxacr6ErWNfPro7DuxKwJXPiDXrLam5tv6rmkASHgp34546LkZrWH5ny8G5qBJHXQh6yCGxu9XNXp3AMQ/i8H9w0E5WDXFo9l+gTAiWBEOp4zR3Arxjz3msp9tjmhAgyITZNpeiSgd4ltKTIOFinFg+R2H2HG7j4vDGfdUqBuHp30UUeWMPybJ62YcPqvF5nBzGG26U9Gv7RTysnZPRFM1hZH+F7Dj5HNBFK7bF64vb8d5AmYzWIxkkncjDciZmNfZo7bBaa6HJ/H8UpiCvAboyNptsp8WkN9vnZAcfY2h+yrWYRkFK4HF9vlGKibwWYVT3AUgLwr3+LdrXJxIFponqf6lqKVNLOXfJ9TM3S8Bs7P/cYSabXlDTaNA/x+qoLmadL/y6fqKKQ7+ZzTdXgHkuDldglaXRH8Dkv6XHo/On2/kGJBAnnFT2G9GAo0nNovfLU3RuGfCeIg=
+  gem: kitcat
+  on:
+    tags: true
+    repo: simplybusiness/kitcat
