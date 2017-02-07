@@ -16,9 +16,9 @@ Gem::Specification.new do |gem|
   gem.require_path  = 'lib'
 
   gem.add_runtime_dependency 'ruby-progressbar', '~> 1.8'
-  gem.add_runtime_dependency 'activemodel', '~> 4.2'
+  gem.add_runtime_dependency 'activemodel'
 
-  gem.add_development_dependency 'rspec', '~> 3.4'
+  gem.add_development_dependency 'rspec'
   gem.add_development_dependency 'timecop', '~> 0.8'
   gem.add_development_dependency 'coveralls', '~> 0.8'
   gem.add_development_dependency 'rake', '~> 11.1'
