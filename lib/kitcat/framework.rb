@@ -57,7 +57,6 @@ module Kitcat
       items.each do |item|
         break unless execute_for(item)
       end
-
     ensure
       end_logging
     end
@@ -141,7 +140,7 @@ module Kitcat
                                          progress_mark: ' ',
                                          remainder_mark: '-',
                                          length: terminal_width,
-                                         format: "%a %bᗧ%i %p%% %e")
+                                         format: '%a %bᗧ%i %p%% %e')
     end
 
     def process_more?

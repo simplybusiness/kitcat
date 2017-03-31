@@ -381,7 +381,7 @@ describe Kitcat::Framework do
           it 'generates a log file with a failure line for the particular item at the end' do
             expect do
               subject.execute
-            end.to raise_error { StandardError }
+            end.to raise_error(StandardError)
 
             log_lines = File.readlines(subject.log_file_path)
             expect(log_lines.size).to be >= 3 #   1 for the default log line at start
