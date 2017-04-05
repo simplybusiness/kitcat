@@ -142,7 +142,8 @@ class MigrationStrategy
     end
   end
   
-  def process(policy)
+  def process(policy_item_wrapper)
+    policy = policy_item_wrapper.policy
     sleep 1
     true
   end
