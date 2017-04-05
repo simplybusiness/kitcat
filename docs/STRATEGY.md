@@ -125,8 +125,9 @@ You can see that it does that, but building an Enumerator collection on top of t
 
 ``` ruby
 class MigrationStrategy
+  PolicyItemWrapper = Struct.new(:policy)
 
-  class PolicyItemWrapper < Struct.new(:policy)
+  class PolicyItemWrapper
     def to_log
       policy["_id"]
     end
