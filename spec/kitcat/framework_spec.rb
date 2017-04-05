@@ -305,7 +305,7 @@ describe Kitcat::Framework do
       end
 
       context 'when process is interrupted with SIGINT or SIGTERM' do
-        %w(INT TERM).each do |signal|
+        %w[INT TERM].each do |signal|
           before do
             allow(strategy).to receive(:process) do
               Process.kill(signal, Process.pid)
