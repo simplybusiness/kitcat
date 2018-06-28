@@ -4,9 +4,15 @@ lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'kitcat/version'
 
+gem_version = if ENV['GEM_PRE_RELEASE'].nil? || ENV['GEM_PRE_RELEASE'].empty?
+                Kitcat::VERSION
+              else
+                "#{Kitcat::VERSION}.#{ENV['GEM_PRE_RELEASE']}"
+              end
+
 Gem::Specification.new do |gem|
   gem.name          = 'kitcat'
-  gem.version       = Kitcat::VERSION
+  gem.version       = gem_version
   gem.summary       = 'a framework to support data processing'
   gem.description   = 'initially created for data migrations. Provides logging, progess bar and graceful handling'
   gem.licenses      = ['MIT']
