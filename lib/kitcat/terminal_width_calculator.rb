@@ -19,8 +19,6 @@ module Kitcat
         elsif stty_case?
           `stty size`.scan(/\d+/).map(&:to_i)[1]
         end
-      rescue
-        0
       end
 
       def tput_case?

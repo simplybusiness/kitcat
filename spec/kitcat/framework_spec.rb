@@ -42,6 +42,7 @@ describe Kitcat::Framework do
         #
         def process(item)
           raise StandardError, 'Cannot process this item' if @exception_item == item.item
+
           @failed_item != item.item
         end
 
@@ -92,10 +93,13 @@ describe Kitcat::Framework do
   let(:progress_bar)               { nil }
 
   subject do
-    described_class.new(strategy, migration_name:             migration_name,
-                                  number_of_items_to_process: number_of_items_to_process,
-                                  progress_bar:               progress_bar,
-                                  progress_bar_output:        progress_bar_output)
+    described_class.new(
+      strategy,
+      migration_name: migration_name,
+      number_of_items_to_process: number_of_items_to_process,
+      progress_bar: progress_bar,
+      progress_bar_output: progress_bar_output
+    )
   end
 
   after do

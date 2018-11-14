@@ -71,6 +71,7 @@ module Kitcat
 
     def progress
       return -1 unless progress_bar?
+
       @progress_bar.progress
     end
 
@@ -135,12 +136,14 @@ module Kitcat
     end
 
     def create_progress_bar(output)
-      @progress_bar = ProgressBar.create(total:  migration_strategy.criteria.count,
-                                         output: output,
-                                         progress_mark: ' ',
-                                         remainder_mark: '-',
-                                         length: terminal_width,
-                                         format: '%a %bᗧ%i %p%% %e')
+      @progress_bar = ProgressBar.create(
+        total: migration_strategy.criteria.count,
+        output: output,
+        progress_mark: ' ',
+        remainder_mark: '-',
+        length: terminal_width,
+        format: '%a %bᗧ%i %p%% %e'
+      )
     end
 
     def process_more?
@@ -149,6 +152,7 @@ module Kitcat
 
     def increment_progress_bar
       return unless progress_bar?
+
       @progress_bar.increment
     end
 
